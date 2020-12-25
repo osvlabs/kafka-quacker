@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t zgldh/mqtt-quacker:latest ./
+docker build -t zgldh/kafka-quacker:latest ./

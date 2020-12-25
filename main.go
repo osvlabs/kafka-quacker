@@ -1,5 +1,5 @@
 /*
- * mqtt-quacker
+ * kafka-quacker
  *
  *
  * Contact: zhangwb@shinetechchina.com
@@ -9,7 +9,7 @@ package main
 
 import (
 	"fmt"
-	"mqtt-quacker/app"
+	"kafka-quacker/app"
 	"os"
 	"runtime"
 )
@@ -17,20 +17,24 @@ import (
 func main() {
 	fmt.Printf("Server started\n")
 
-	mqttConfig := app.QuackerConfig{
-		Host:     getEnv("QUACKER_HOST", "127.0.0.1"), // "mqtt.osvie.com",
-		Port:     getEnv("QUACKER_PORT", "1883"),
-		Username: getEnv("QUACKER_USERNAME", ""),
-		Password: getEnv("QUACKER_PASSWORD", ""),
-		Topic:    getEnvOrFail("QUACKER_TOPIC"),
-		ClientId: getEnv("QUACKER_CLIENTID", "mqtt-quacker"),
-		QoS:      getEnv("QUACKER_QOS", "0"),
-		Interval: getEnv("QUACKER_INTERVAL", "1"),
-		DataFile: getEnv("QUACKER_DATAFILE", "/data.json"),
-		DryRun:   getEnv("QUACKER_DRYRUN", "") != "",
+	quackerConfig := app.QuackerConfig{
+
+		Host:               getEnv("QUACKER_HOST", "127.0.0.1"), // "kafka.osvie.com",
+		Port:               getEnv("QUACKER_PORT", "9091"),
+		SecurityProtocol:   getEnv("QUACKER_SECURITY_PROTOCOL", "PLAINTEXT"), // PLAINTEXT or SSL. Not support SASL_PLAINTEXT or SASL_SSL yet
+		TrustStore:         getEnv("QUACKER_TRUSTSTORE", ""),                 // truststore file path.
+		TrustStorePassword: getEnv("QUACKER_TRUSTSTORE_PASSWORD", ""),        // truststore file password.
+		KeyStore:           getEnv("QUACKER_KEYSTORE", ""),                   // keystore file path.
+		KeyStorePassword:   getEnv("QUACKER_KEYSTORE_PASSWORD", ""),          // keystore file password.
+		KeyPassword:        getEnv("QUACKER_KEY_PASSWORD", ""),               // key password.
+		Topic:              getEnvOrFail("QUACKER_TOPIC"),                    // Your kafka topic name.
+		ClientId:           getEnv("QUACKER_CLIENTID", "kafka-quacker"),
+		Interval:           getEnv("QUACKER_INTERVAL", "1"),
+		DataFile:           getEnv("QUACKER_DATAFILE", "/data.json"),
+		DryRun:             getEnv("QUACKER_DRYRUN", "") != "",
 	}
 
-	quacker := app.NewQuacker(mqttConfig)
+	quacker := app.NewQuacker(quackerConfig)
 	runtime.SetFinalizer(&quacker, func(obj *app.Quacker) {
 		obj.Close()
 	})

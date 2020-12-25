@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// DataBuilderConfig - Configuration of MQTT server
+// DataBuilderConfig - Configuration of Data builder
 type DataBuilderConfig struct {
 	Path string // Path - Data template file path
 }

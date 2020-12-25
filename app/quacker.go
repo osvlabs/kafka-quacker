@@ -2,25 +2,29 @@ package app
 
 import (
 	"fmt"
+	"github.com/Shopify/sarama/tools/tls"
 	"math"
 	"strconv"
 	"time"
 
-	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/Shopify/sarama"
 )
 
-// QuackerConfig - Configuration of MQTT server
+// QuackerConfig - Configuration of kafka quacker
 type QuackerConfig struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	Topic    string
-	ClientId string
-	QoS      string
-	Interval string // Interval - Seconds between two publish
-	DataFile string // DataFile - Data template file path
-	DryRun   bool
+	Host               string
+	Port               string
+	SecurityProtocol   string
+	TrustStore         string
+	TrustStorePassword string
+	KeyStore           string
+	KeyStorePassword   string
+	KeyPassword        string
+	Topic              string
+	ClientId           string
+	Interval           string // Interval - Seconds between two publish
+	DataFile           string // DataFile - Data template file path
+	DryRun             bool
 }
 
 // Quacker - The quacker class.
@@ -41,7 +45,7 @@ func NewQuacker(config QuackerConfig) Quacker {
 func (q *Quacker) Close() {
 }
 
-// Start - Start to subscribe MQTT and tranfer data into Pgsql
+// Start - Start to connect to Kafka topic and transfer data.
 func (q *Quacker) Start() error {
 	fmt.Printf("Quacker starting...\n")
 
@@ -59,7 +63,24 @@ func (q *Quacker) Start() error {
 
 	payload := ""
 
-	opts := MQTT.NewClientOptions()
+	config := sarama.NewConfig()
+	config.Producer.RequiredAcks = sarama.WaitForLocal
+	config.Net.TLS.Config.Certificates
+
+	if q.config.SecurityProtocol == "SSL" {
+		tlsConfig, err := tls.NewConfig(*tlsClientCert, *tlsClientKey)
+		if err != nil {
+			printErrorAndExit(69, "Failed to create TLS config: %s", err)
+		}
+
+
+
+		config.Net.TLS.Enable = true
+		config.Net.TLS.Config = tlsConfig
+		config.Net.TLS.Config.InsecureSkipVerify = *tlsSkipVerify
+	}
+
+
 	opts.AddBroker(q.config.Host + ":" + q.config.Port)
 	opts.SetClientID(q.config.ClientId)
 	opts.SetUsername(q.config.Username)
@@ -76,7 +97,7 @@ func (q *Quacker) Start() error {
 		}
 	}
 
-	fmt.Printf("MQTT server %s:%s\n", q.config.Host, q.config.Port)
+	fmt.Printf("Kafka bootstrap server %s:%s\n", q.config.Host, q.config.Port)
 	fmt.Printf("Client ID %s\n", q.config.ClientId)
 	fmt.Println("Publisher Started to: " + q.config.Topic)
 	for true {
