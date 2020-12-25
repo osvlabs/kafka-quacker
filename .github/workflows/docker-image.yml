@@ -24,7 +24,7 @@ jobs:
         # Registry password
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         # Repository on registry
-        repository: zgldh/mqtt-quacker
+        repository: zgldh/kafka-quacker
         # Registry hostname
         #registry: # optional
         # Image tag
