@@ -54,7 +54,7 @@ public class ServiceConfig {
      * Data emit frequency. (seconds)
      * Default: 1
      */
-    public static String QUACKER_INTERVAL = System.getenv("QUACKER_INTERVAL");
+    public static int QUACKER_INTERVAL = 1000;
 
     /**
      * The data template file
@@ -64,10 +64,15 @@ public class ServiceConfig {
     /**
      * Dry run will only generate data but not emit to Kafka server.
      */
-    public static String QUACKER_DRYRUN = System.getenv("QUACKER_DRYRUN");
+    public static boolean QUACKER_DRYRUN = System.getenv("QUACKER_DRYRUN").length() <= 0;
 
 
     static {
+        String RawQuackerInterval = System.getenv("QUACKER_INTERVAL");
+        if (RawQuackerInterval != null && RawQuackerInterval.length() > 0) {
+            ServiceConfig.QUACKER_INTERVAL = Integer.parseInt(RawQuackerInterval) * 1000;
+        }
+
         System.out.println("QUACKER_BOOTSTRAP_SERVER = " + ServiceConfig.QUACKER_BOOTSTRAP_SERVER);
         System.out.println("QUACKER_SECURITY_PROTOCOL = " + ServiceConfig.QUACKER_SECURITY_PROTOCOL);
         System.out.println("QUACKER_KEYSTORE = " + ServiceConfig.QUACKER_KEYSTORE);

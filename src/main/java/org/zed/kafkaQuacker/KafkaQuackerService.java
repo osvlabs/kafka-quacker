@@ -1,9 +1,15 @@
 package org.zed.kafkaQuacker;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Discards any incoming data.
  */
 public class KafkaQuackerService {
+
+    private final AtomicBoolean running = new AtomicBoolean();
 
     public KafkaQuackerService() {
     }
@@ -11,17 +17,58 @@ public class KafkaQuackerService {
     public void run() throws Exception {
         addShutdownHook();
         try {
-            initComponents();
+            startProducer();
         } finally {
             this.shutdownGracefully();
         }
     }
 
-    private void initComponents() {
-        System.out.println("Connecting to Kafka...");
-        MessageProducer mp = MessageProducer.getInstance();
-        mp.init();
-        System.out.println("Kafka connected.");
+    private void startProducer() {
+        System.out.println("Quacker starting...");
+        MessageProducer mp = null;
+        DataBuilder db = DataBuilder.getInstance();
+        db.init(ServiceConfig.QUACKER_DATAFILE);
+
+        String publishLabel = "Publish";
+        if (ServiceConfig.QUACKER_DRYRUN) {
+            System.out.println("Dry run");
+            publishLabel = "Dry run";
+        } else {
+            mp = MessageProducer.getInstance();
+            mp.init();
+        }
+
+        System.out.println(String.format("Kafka bootstrap server %s", ServiceConfig.QUACKER_BOOTSTRAP_SERVER));
+        System.out.println("Security Protocol " + ServiceConfig.QUACKER_SECURITY_PROTOCOL);
+        System.out.println("Client ID " + ServiceConfig.QUACKER_CLIENTID);
+        System.out.println("Publisher Started to: " + ServiceConfig.QUACKER_TOPIC);
+
+        running.set(true);
+        while (running.get()) {
+            System.out.println(String.format("%s ---- %s ----\n", new Date().toString(), publishLabel));
+
+            QuackerMessage message = db.getMessage();
+
+            if (!ServiceConfig.QUACKER_DRYRUN) {
+                mp.send(message.getKey(), message.getPayload());
+            }
+            System.out.println(message);
+            try {
+                Thread.sleep(ServiceConfig.QUACKER_INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                running.set(false);
+            }
+        }
+
+        if (ServiceConfig.QUACKER_DRYRUN) {
+            System.out.println("Publisher Terminated");
+        } else {
+            if (mp != null) {
+                mp.shutdownGracefully();
+            }
+            System.out.println("Publisher Disconnected");
+        }
     }
 
     private void addShutdownHook() {
@@ -40,13 +87,11 @@ public class KafkaQuackerService {
     }
 
     private void shutdownGracefully() {
-
         MessageProducer mp = MessageProducer.getInstance();
         mp.shutdownGracefully();
     }
 
     public static void main(String[] args) throws Exception {
-        ServiceConfig sc = new ServiceConfig();
         new KafkaQuackerService().run();
     }
 }
