@@ -1,14 +1,11 @@
-# kafka-quacker
+# kafka-quacker Kafka 模拟数据发送器
 
-Send mock data to your Kafka topic.
+Send mock JSON/String data to your Kafka topic.
 
 ## Usage docker
 ```
 docker run 
-  -e QUACKER_HOST=kafka.host.com 
-  -e QUACKER_PORT=1883 
-  -e QUACKER_USERNAME=kafka-username 
-  -e QUACKER_PASSWORD=kafka-password 
+  -e QUACKER_BOOTSTRAP_SERVER=kafka.host.com:9091
   -e QUACKER_TOPIC=my-topic/telemetry 
   -v /home/zgldh/my-project/data.json:/data.json 
   zgldh/kafka-quacker:1.0
@@ -26,8 +23,7 @@ docker-compose up
 
 name| descrpition | sample
 ----|-------------|---------
-QUACKER_HOST| The host to your Kafka bootstrap server. | `kafka.host.com`
-QUACKER_PORT| The Kafka bootstrap port. |`9091`
+QUACKER_BOOTSTRAP_SERVER| The server to your Kafka bootstrap server. | `kafka.host.com:9091`
 QUACKER_SECURITY_PROTOCOL| `PLAINTEXT` or `SSL`. Not support SASL_PLAINTEXT or SASL_SSL yet| `PLAINTEXT`
 QUACKER_TRUSTSTORE| The truststore file path.| `/secrets/kafka.truststore`
 QUACKER_TRUSTSTORE_PASSWORD| The truststore file password.| `you-dont-know`   

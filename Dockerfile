@@ -1,17 +1,11 @@
-FROM zgldh/docker-golang-builder:1.15.2-alpine3.12 AS build
+FROM maven:3.3-jdk-8 AS build
 
-WORKDIR /go/src
-COPY app ./app
-COPY main.go .
-COPY go.mod .
+WORKDIR /java
+COPY src ./src
+COPY pom.xml .
 
-ENV CGO_ENABLED=0
-ENV GO111MODULE=on
-RUN go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
-RUN go get -v ./...
+RUN mvn clean package
 
-RUN go build -a -o main -ldflags '-extldflags "-static"' .
-
-FROM scratch AS runtime
-COPY --from=build /go/src/main ./
-ENTRYPOINT ["./main"]
+FROM anapsix/alpine-java:8u201b09_server-jre_nashorn AS runtime
+COPY --from=build /java/target/kafka-quacker-1.0.0-RELEASE-jar-with-dependencies.jar ./service.jar
+ENTRYPOINT ["java","-jar","service.jar"]
