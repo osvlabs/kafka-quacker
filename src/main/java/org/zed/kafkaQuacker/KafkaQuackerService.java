@@ -1,5 +1,7 @@
 package org.zed.kafkaQuacker;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,16 +16,18 @@ public class KafkaQuackerService {
     public KafkaQuackerService() {
     }
 
-    public void run() throws Exception {
+    public void run() {
         addShutdownHook();
         try {
             startProducer();
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             this.shutdownGracefully();
         }
     }
 
-    private void startProducer() {
+    private void startProducer() throws IOException {
         System.out.println("Quacker starting...");
         MessageProducer mp = null;
         DataBuilder db = DataBuilder.getInstance();
@@ -92,6 +96,7 @@ public class KafkaQuackerService {
     }
 
     public static void main(String[] args) throws Exception {
+        new ServiceConfig();
         new KafkaQuackerService().run();
     }
 }

@@ -1,15 +1,21 @@
 package org.zed.kafkaQuacker;
 
-import com.fasterxml.jackson.databind.cfg.MapperBuilder;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.jr.ob.JSON;
+import com.fasterxml.jackson.jr.ob.impl.DeferredMap;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataBuilder {
     private static DataBuilder instance;
     private String templatePath;
-    private ObjectNode template;
+    private String kafkaMsgKey;
+    private String kafkaMsgValueTemplate;
+    private HashMap<Integer, Function<Object, String>> slots = new HashMap();
 
     private DataBuilder() {
     }
@@ -21,12 +27,42 @@ public class DataBuilder {
         return instance;
     }
 
-    public void init(String tempaltePath) {
+    public void init(String templatePath) throws IOException {
         this.templatePath = templatePath;
-        this.template = null;
+
+        File templateFile = new File(this.templatePath);
+        Object templateContent = JSON.std.anyFrom(templateFile);
+
+        kafkaMsgKey = ((DeferredMap) templateContent).get("KAFKA_MSG_KEY").toString();
+        kafkaMsgValueTemplate = compileValueTemplate(JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT).asString(((DeferredMap) templateContent).get("KAFKA_MSG_VALUE")));
+    }
+
+    private String compileValueTemplate(String rawValueTemplate) {
+        Pattern pattern = Pattern.compile("(\"q:.*\")");
+        Matcher matcher = pattern.matcher(rawValueTemplate);
+        while(matcher.find()){
+            // TODO
+        }
+        return null;
     }
 
     public QuackerMessage getMessage() {
+        return new QuackerMessage(
+                generateKafkaMessageKey(),
+                generateKafkaMessageValue()
+        );
+    }
+
+    private String generateKafkaMessageKey() {
+        return replaceContents(this.kafkaMsgKey);
+    }
+
+    private byte[] generateKafkaMessageValue() {
+        String resultContent = replaceContents(this.kafkaMsgValueTemplate);
+        return resultContent != null ? resultContent.getBytes() : new byte[0];
+    }
+
+    private String replaceContents(String raw) {
         return null;
     }
 }

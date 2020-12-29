@@ -64,13 +64,18 @@ public class ServiceConfig {
     /**
      * Dry run will only generate data but not emit to Kafka server.
      */
-    public static boolean QUACKER_DRYRUN = System.getenv("QUACKER_DRYRUN").length() <= 0;
+    public static boolean QUACKER_DRYRUN = true;
 
 
     static {
         String RawQuackerInterval = System.getenv("QUACKER_INTERVAL");
         if (RawQuackerInterval != null && RawQuackerInterval.length() > 0) {
             ServiceConfig.QUACKER_INTERVAL = Integer.parseInt(RawQuackerInterval) * 1000;
+        }
+        String RawQuackerDryrun = System.getenv("QUACKER_DRYRUN");
+        if (RawQuackerDryrun != null && RawQuackerDryrun.length() > 0) {
+            RawQuackerDryrun = RawQuackerDryrun.toLowerCase();
+            ServiceConfig.QUACKER_DRYRUN = RawQuackerDryrun.equals("1") || RawQuackerDryrun.equals("true");
         }
 
         System.out.println("QUACKER_BOOTSTRAP_SERVER = " + ServiceConfig.QUACKER_BOOTSTRAP_SERVER);

@@ -30,8 +30,8 @@ public class MessageProducer {
         }
     }
 
-    public void send(MessageKey key, byte[] message) {
-        ProducerRecord<String, byte[]> data = new ProducerRecord<>(ServiceConfig.QUACKER_TOPIC, key.toString(), message);
+    public void send(String key, byte[] message) {
+        ProducerRecord<String, byte[]> data = new ProducerRecord<>(ServiceConfig.QUACKER_TOPIC, key, message);
         TestCallback callback = new TestCallback();
         producer.send(data, callback);
     }
