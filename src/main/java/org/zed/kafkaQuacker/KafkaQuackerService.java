@@ -49,7 +49,7 @@ public class KafkaQuackerService {
 
         running.set(true);
         while (running.get()) {
-            System.out.println(String.format("%s ---- %s ----\n", new Date().toString(), publishLabel));
+            System.out.println(String.format("%s ---- %s ----", new Date().toString(), publishLabel));
 
             QuackerMessage message = db.getMessage();
 
@@ -63,6 +63,7 @@ public class KafkaQuackerService {
                 e.printStackTrace();
                 running.set(false);
             }
+            System.out.println();
         }
 
         if (ServiceConfig.QUACKER_DRYRUN) {
