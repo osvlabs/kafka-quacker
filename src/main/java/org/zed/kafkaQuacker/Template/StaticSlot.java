@@ -1,7 +1,7 @@
 package org.zed.kafkaQuacker.Template;
 
-public class ValueTemplateStaticSlot extends ValueTemplateSlot {
-    public ValueTemplateStaticSlot(String templateSegment) {
+public class StaticSlot extends BasicSlot {
+    public StaticSlot(String templateSegment) {
         super(templateSegment);
     }
 

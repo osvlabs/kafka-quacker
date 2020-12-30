@@ -20,14 +20,14 @@ public class KafkaQuackerService {
         addShutdownHook();
         try {
             startProducer();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             this.shutdownGracefully();
         }
     }
 
-    private void startProducer() throws IOException {
+    private void startProducer() throws Exception {
         System.out.println("Quacker starting...");
         MessageProducer mp = null;
         DataBuilder db = DataBuilder.getInstance();

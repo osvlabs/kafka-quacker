@@ -1,7 +1,5 @@
 package org.zed.kafkaQuacker;
 
-import java.util.Arrays;
-
 public class QuackerMessage {
     private String key;
     private byte[] payload;

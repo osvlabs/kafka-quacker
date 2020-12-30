@@ -2,11 +2,11 @@ package org.zed.kafkaQuacker.Template;
 
 import java.util.function.Function;
 
-public class ValueTemplateSlot implements Function<Object, String> {
+public class BasicSlot implements Function<Object, String> {
 
     protected String rawTemplateSegment;
 
-    public ValueTemplateSlot(String templateSegment) {
+    public BasicSlot(String templateSegment) {
         this.rawTemplateSegment = templateSegment;
     }
 

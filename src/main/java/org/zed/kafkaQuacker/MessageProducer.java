@@ -12,7 +12,6 @@ public class MessageProducer {
 
     private static MessageProducer instance;
     private Producer<String, byte[]> producer;
-//    private final String bootstrapServers = "localhost:8265";
 
     private MessageProducer() {
     }
