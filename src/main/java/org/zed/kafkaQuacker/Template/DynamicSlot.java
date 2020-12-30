@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class DynamicSlot extends BasicSlot {
 
-    private static final Pattern TYPE_PATTERN = Pattern.compile("\"q:(.*):(.*)\"");
+    private static final Pattern TYPE_PATTERN = Pattern.compile("(?:\\{|\")q:(.*?)(?::(.*)?)?(?:\"|}){1}?");
 
     private String valueType;
     private String slotRawParameter;
@@ -14,12 +14,12 @@ public class DynamicSlot extends BasicSlot {
     public DynamicSlot(String templateSegment) throws Exception {
         super(templateSegment);
         Matcher matcher = TYPE_PATTERN.matcher(templateSegment);
-        if(!matcher.matches()){
-            throw new Exception("Dynamic Slot has wrong template: "+templateSegment);
+        if (!matcher.matches()) {
+            throw new Exception("Dynamic Slot has wrong template: " + templateSegment);
         }
         valueType = matcher.group(1);
-        slotRawParameter  =matcher.group(2);
-        switch (valueType){
+        slotRawParameter = matcher.group(2);
+        switch (valueType) {
             case "float":
                 valueMaker = new ValueMakerFloat(slotRawParameter);
                 break;
@@ -29,8 +29,11 @@ public class DynamicSlot extends BasicSlot {
             case "string":
                 valueMaker = new ValueMakerString(slotRawParameter);
                 break;
+            case "timestamp":
+                valueMaker = new ValueMakerTimestamp(slotRawParameter);
+                break;
             default:
-                throw new Exception("Dynamic Slot has unknown type: "+valueType);
+                throw new Exception("Dynamic Slot has unknown type: " + valueType);
         }
     }
 

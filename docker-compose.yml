@@ -8,62 +8,21 @@ services:
   quacker:
     image:  zgldh/kafka-quacker:1.0
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: $KAFKA_INTERNET_HOST:$KAFKA_INTERNET_PORT
-      KAFKA_SSL_KEYSTORE_LOCATION: /certificates/keystore
-      KAFKA_SSL_KEYSTORE_PASSWORD: $KAFKA_SSL_KEYSTORE_PASSWORD
-      KAFKA_SSL_KEY_PASSWORD: $KAFKA_SSL_KEY_PASSWORD
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /certificates/truststore
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: $KAFKA_SSL_TRUSTSTORE_PASSWORD
-      DHUB_TELEMETRY_TOPIC: $DHUB_TELEMETRY_TOPIC
-      DHUB_COMMAND_TOPIC: $DHUB_COMMAND_TOPIC
-      DHUB_HOST: 0.0.0.0
-      DHUB_TCP_PORT: 9833
-      DHUB_UDP_PORT: 9834
-      DHUB_DEVICE_TIMEOUT: $DHUB_DEVICE_TIMEOUT
-      DHUB_DEVICE_AUTH_URL: $DHUB_DEVICE_AUTH_URL
-    depends_on:
-      - kafka
-    networks:
-      - backend
-    ports:
-      - $DHUB_TCP_PORT:9833
-      - $DHUB_UDP_PORT:9834
-    volumes:
-      - $KAFKA_SSL_KEYSTORE_LOCATION:/certificates/keystore
-      - $KAFKA_SSL_TRUSTSTORE_LOCATION:/certificates/truststore
-
-  zookeeper:
-    image: wurstmeister/zookeeper
-    networks:
-      - backend
-    expose:
-      - 2181
-
-  kafka:
-    image: wurstmeister/kafka:2.13-2.6.0
-    expose:
-      - 9093
-    ports:
-      - $KAFKA_INTERNET_PORT:9093
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_CREATE_TOPICS: ${DHUB_TELEMETRY_TOPIC}:1:1,${DHUB_COMMAND_TOPIC}:1:1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://:9092,SSL://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092,SSL://$KAFKA_INTERNET_HOST:$KAFKA_INTERNET_PORT
-      KAFKA_SSL_KEYSTORE_LOCATION: /certificates/keystore
-      KAFKA_SSL_KEYSTORE_PASSWORD: $KAFKA_SSL_KEYSTORE_PASSWORD
-      KAFKA_SSL_KEY_PASSWORD: $KAFKA_SSL_KEY_PASSWORD
-      KAFKA_SSL_TRUSTSTORE_LOCATION: /certificates/truststore
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: $KAFKA_SSL_TRUSTSTORE_PASSWORD
-      KAFKA_SSL_CLIENT_AUTH: required
-      KAFKA_SSL_ENABLED_PROTOCOLS: TLSv1.2,TLSv1.1,TLSv1
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
-    depends_on:
-      - zookeeper
+      QUACKER_BOOTSTRAP_SERVER: $QUACKER_BOOTSTRAP_SERVER
+      QUACKER_SECURITY_PROTOCOL: $QUACKER_SECURITY_PROTOCOL
+      QUACKER_KEYSTORE: /certificates/keystore
+      QUACKER_KEYSTORE_PASSWORD: $QUACKER_KEYSTORE_PASSWORD
+      QUACKER_KEY_PASSWORD: $QUACKER_KEY_PASSWORD
+      QUACKER_TRUSTSTORE: /certificates/truststore
+      QUACKER_TRUSTSTORE_PASSWORD: $QUACKER_TRUSTSTORE_PASSWORD
+      QUACKER_TOPIC: $QUACKER_TOPIC
+      QUACKER_CLIENTID: $QUACKER_CLIENTID
+      QUACKER_INTERVAL: $QUACKER_INTERVAL
+      QUACKER_DATAFILE: /data.json
+      QUACKER_DRYRUN: $QUACKER_DRYRUN
     networks:
       - backend
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - $KAFKA_SSL_KEYSTORE_LOCATION:/certificates/keystore
-      - $KAFKA_SSL_TRUSTSTORE_LOCATION:/certificates/truststore
+      - $QUACKER_KEYSTORE:/certificates/keystore
+      - $QUACKER_TRUSTSTORE:/certificates/truststore
+      - $QUACKER_DATAFILE:/data.json

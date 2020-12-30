@@ -2,16 +2,18 @@
   "KAFKA_MSG_KEY": "kafka-msg-key",
   "KAFKA_MSG_VALUE": {
     "params": {
-      "temperature": "q:float:0,100",
-      "humidity": "q:float:0,100",
-      "wind_speed": "q:float:0,100",
+      "temperature": "q:float:0,10",
+      "humidity": "q:float:0,20",
+      "wind_speed": "q:float:0,30",
       "wind_direction": "q:int:0,359",
-      "pressure": "q:float:0,100",
-      "rain_minute": "q:float:0,100",
-      "rain_total": "q:float:0,100",
-      "drop": "q:string:nothing,rain,snow,rain_snow,hail,rain_hail,snow_hail,rain_snow_hail,testing",
-      "solar_radiation": "q:float:0,100",
-      "daily_radiation": "q:float:0,100"
+      "pressure": "q:float:0,40",
+      "rain_minute": "q:float:0,50",
+      "rain_total": "q:float:0,60",
+      "drop": "{q:string:nothing,rain,snow,rain_snow,hail,rain_hail,snow_hail,rain_snow_hail,testing}",
+      "solar_radiation": "q:float:0,70",
+      "daily_radiation": "q:float:0,80",
+      "timestamp": "{q:timestamp:yyyy-MM-dd}",
+      "another_timestamp": "{q:timestamp}"
     }
   }
 }

@@ -21,6 +21,9 @@ public class DataBuilder {
     private Vector<BasicSlot> compiledKeyTemplate = new Vector<>();
     private Vector<BasicSlot> compiledValueTemplate = new Vector<>();
 
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("((?:\\{|\")q:.*?(?:\"|}){1}?)");
+
+
     private DataBuilder() {
     }
 
@@ -43,8 +46,7 @@ public class DataBuilder {
 
     private Vector<BasicSlot> compileTemplate(String rawTemplate) throws Exception {
         Vector<BasicSlot> slots = new Vector<>();
-        Pattern pattern = Pattern.compile("(\"q:.*\")");
-        Matcher matcher = pattern.matcher(rawTemplate);
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(rawTemplate);
         int templateStartIndex = 0;
         while (matcher.find()) {
             String staticSegment = rawTemplate.substring(templateStartIndex, matcher.start());

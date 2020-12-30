@@ -41,6 +41,8 @@ Please edit the file `data.json` to any text you want. It supports following pla
 - `q:float:{min},{max}` to generate a float number between [min, max).
 - `q:int:{min},{max}` to generate an integer number between [min, max).
 - `q:string:{str1},{str2},{str3},...,{strN}` to get one string from n strings randomly.
+- `q:timestamp` to get a current timestamp. You can custom the date format: `q:timestamp:yyyy-MM-dd hh:mm:ss`    
+
 
 Currently, no more placeholders supported.
 
