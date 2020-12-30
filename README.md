@@ -8,7 +8,7 @@ docker run
   -e QUACKER_BOOTSTRAP_SERVER=kafka.host.com:9091
   -e QUACKER_TOPIC=my-topic/telemetry 
   -v /home/zgldh/my-project/data.json:/data.json 
-  zgldh/kafka-quacker:1.0
+  zgldh/kafka-quacker:1.0.1
 ```
 
 ## Usage docker-compose
