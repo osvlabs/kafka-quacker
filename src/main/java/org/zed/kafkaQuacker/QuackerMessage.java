@@ -29,6 +29,6 @@ public class QuackerMessage {
 
     @Override
     public String toString() {
-        return key + ", " + Arrays.toString(payload);
+        return key + ", " + new String(payload);
     }
 }

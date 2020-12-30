@@ -2,20 +2,24 @@ package org.zed.kafkaQuacker;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import com.fasterxml.jackson.jr.ob.impl.DeferredMap;
+import org.zed.kafkaQuacker.Template.ValueTemplateDynamicSlot;
+import org.zed.kafkaQuacker.Template.ValueTemplateSlot;
+import org.zed.kafkaQuacker.Template.ValueTemplateStaticSlot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataBuilder {
     private static DataBuilder instance;
     private String templatePath;
-    private String kafkaMsgKey;
-    private String kafkaMsgValueTemplate;
-    private HashMap<Integer, Function<Object, String>> slots = new HashMap();
+    private Vector<ValueTemplateSlot> compiledKeyTemplate = new Vector<>();
+    private Vector<ValueTemplateSlot> compiledValueTemplate = new Vector<>();
 
     private DataBuilder() {
     }
@@ -33,17 +37,31 @@ public class DataBuilder {
         File templateFile = new File(this.templatePath);
         Object templateContent = JSON.std.anyFrom(templateFile);
 
-        kafkaMsgKey = ((DeferredMap) templateContent).get("KAFKA_MSG_KEY").toString();
-        kafkaMsgValueTemplate = compileValueTemplate(JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT).asString(((DeferredMap) templateContent).get("KAFKA_MSG_VALUE")));
+        compiledKeyTemplate = compileTemplate(((DeferredMap) templateContent).get("KAFKA_MSG_KEY").toString());
+        compiledValueTemplate = compileTemplate(JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT).asString(((DeferredMap) templateContent).get("KAFKA_MSG_VALUE")));
     }
 
-    private String compileValueTemplate(String rawValueTemplate) {
+    private Vector<ValueTemplateSlot> compileTemplate(String rawTemplate) {
+        Vector<ValueTemplateSlot> slots = new Vector<>();
         Pattern pattern = Pattern.compile("(\"q:.*\")");
-        Matcher matcher = pattern.matcher(rawValueTemplate);
-        while(matcher.find()){
-            // TODO
+        Matcher matcher = pattern.matcher(rawTemplate);
+        int templateStartIndex = 0;
+        while (matcher.find()) {
+            String staticSegment = rawTemplate.substring(templateStartIndex, matcher.start());
+            if (staticSegment.length() > 0) {
+                slots.add(new ValueTemplateStaticSlot(staticSegment));
+            }
+
+            String dynamicSegment = rawTemplate.substring(matcher.start(), matcher.end());
+            slots.add(new ValueTemplateDynamicSlot(dynamicSegment));
+
+            templateStartIndex = matcher.end();
         }
-        return null;
+        String tailStaticSegment = rawTemplate.substring(templateStartIndex);
+        if (tailStaticSegment.length() > 0) {
+            slots.add(new ValueTemplateStaticSlot(tailStaticSegment));
+        }
+        return slots;
     }
 
     public QuackerMessage getMessage() {
@@ -54,17 +72,30 @@ public class DataBuilder {
     }
 
     private String generateKafkaMessageKey() {
-        return replaceContents(this.kafkaMsgKey);
+        return replaceContents(this.compiledKeyTemplate);
     }
 
     private byte[] generateKafkaMessageValue() {
-        String resultContent = replaceContents(this.kafkaMsgValueTemplate);
+        String resultContent = replaceContents(this.compiledValueTemplate);
         return resultContent != null ? resultContent.getBytes() : new byte[0];
     }
 
-    private String replaceContents(String raw) {
-        return null;
+    private String replaceContents(Vector<ValueTemplateSlot> parsedTemplateSlots) {
+        ArrayList<String> result = new ArrayList<>();
+        parsedTemplateSlots.forEach(new Consumer<ValueTemplateSlot>() {
+            @Override
+            public void accept(ValueTemplateSlot valueTemplateSlot) {
+                result.add(valueTemplateSlot.apply(null));
+            }
+        });
+        return result.stream().reduce("", new BinaryOperator<String>() {
+            @Override
+            public String apply(String s, String s2) {
+                return s + s2;
+            }
+        });
     }
+
 }
 
 //    // DataBuilderConfig - Configuration of MQTT server
