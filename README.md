@@ -13,7 +13,7 @@ docker run
 
 ## Usage docker-compose
 
-Edit the docker-compose.yml  
+Edit the `.env` then:  
 ```
 docker-compose up 
 ```
