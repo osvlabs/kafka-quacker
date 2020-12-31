@@ -8,7 +8,7 @@ docker run
   -e QUACKER_BOOTSTRAP_SERVER=kafka.host.com:9091
   -e QUACKER_TOPIC=my-topic/telemetry 
   -v /home/zgldh/my-project/data.json:/data.json 
-  zgldh/kafka-quacker:1.0.1
+  zgldh/kafka-quacker:1.1.0
 ```
 
 ## Usage docker-compose
@@ -32,7 +32,7 @@ QUACKER_KEYSTORE_PASSWORD| The keystore file password.|   `you-dont-know`
 QUACKER_KEY_PASSWORD| The key password.|   `you-dont-know`
 QUACKER_TOPIC| Which topic do you want the mock data send to? |`your/topic/to/send`
 QUACKER_CLIENTID| The client ID |`kafka-quacker`
-QUACKER_INTERVAL| Time interval between two data sending. |`1`
+QUACKER_INTERVAL| Time interval between two data sending. (ms) |`1000`
 QUACKER_DATAFILE| The mock data template. |`./data.json`
 QUACKER_DRYRUN| Dont push to server, just output payload. |""
 
@@ -41,7 +41,7 @@ Please edit the file `data.json` to any text you want. It supports following pla
 - `q:float:{min},{max}` to generate a float number between [min, max).
 - `q:int:{min},{max}` to generate an integer number between [min, max).
 - `q:string:{str1},{str2},{str3},...,{strN}` to get one string from n strings randomly.
-- `q:timestamp` to get a current timestamp. You can custom the date format: `q:timestamp:yyyy-MM-dd hh:mm:ss`    
+- `q:timestamp` to get a current timestamp. You could custom the date format: `q:timestamp:yyyy-MM-dd hh:mm:ss`. Please refer to https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html     
 
 
 Currently, no more placeholders supported.

@@ -70,7 +70,7 @@ public class ServiceConfig {
     static {
         String RawQuackerInterval = System.getenv("QUACKER_INTERVAL");
         if (RawQuackerInterval != null && RawQuackerInterval.length() > 0) {
-            ServiceConfig.QUACKER_INTERVAL = Integer.parseInt(RawQuackerInterval) * 1000;
+            ServiceConfig.QUACKER_INTERVAL = Math.max(Integer.parseInt(RawQuackerInterval), 1);
         }
         String RawQuackerDryrun = System.getenv("QUACKER_DRYRUN");
         if (RawQuackerDryrun != null && RawQuackerDryrun.length() > 0) {

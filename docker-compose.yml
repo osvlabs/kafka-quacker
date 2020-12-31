@@ -6,7 +6,7 @@ networks:
 
 services:
   quacker:
-    image:  zgldh/kafka-quacker:1.0.1
+    image:  zgldh/kafka-quacker:1.1.0
     environment:
       QUACKER_BOOTSTRAP_SERVER: $QUACKER_BOOTSTRAP_SERVER
       QUACKER_SECURITY_PROTOCOL: $QUACKER_SECURITY_PROTOCOL
